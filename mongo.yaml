@@ -1,4 +1,6 @@
 
+# Deployment
+
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -31,3 +33,20 @@ spec:
             secretKeyRef:
               name: mongodb-secret
               key: mongo-root-password
+---
+# Service
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: mongodb-service
+spec:
+  selector: 
+  # to connect to pod through label
+    app: mongodb
+  ports:
+    - protocol: TCP
+      port: 27017
+      targetPort: 27017
+
+          

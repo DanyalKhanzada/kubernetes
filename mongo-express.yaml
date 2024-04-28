@@ -35,4 +35,4 @@ spec:
           valueFrom:  
             configMapKeyRef:
               name: mongodb-configmap
-              key: atabase_url
+              key: database_url

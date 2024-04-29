@@ -3,25 +3,25 @@ kind: Deployment
 metadata:
   name: mongo-express
   labels:
-    app:  mongo-express
+    app: mongo-express
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app:  mongo-express
+      app: mongo-express
   template:
     metadata:
       labels:
-        app:  mongo-express
+        app: mongo-express
     spec:
       containers:
-      - name:  mongo-express
-        image:  mongo-express
+      - name: mongo-express
+        image: mongo-express
         ports:
         - containerPort: 8081
         env:
         - name: ME_CONFIG_MONGODB_ADMINUSERNAME
-        valueFrom:
+          valueFrom:
             secretKeyRef:
               name: mongodb-secret
               key: mongo-root-username
@@ -30,9 +30,26 @@ spec:
             secretKeyRef:
               name: mongodb-secret
               key: mongo-root-password
-        # Put the below in 'ConfigMap' - Reason: external Configuration , Centralized and other components can use it
         - name: ME_CONFIG_MONGODB_SERVER
-          valueFrom:  
+        # Put the below in 'ConfigMap' - Reason: external Configuration , Centralized and other components can use it
+          valueFrom: 
             configMapKeyRef:
               name: mongodb-configmap
               key: database_url
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: mongodb-service
+spec:
+  selector: 
+  # to connect to pod through label
+    app: mongodb
+  #  need an external service so Loadbalncer as added a type
+  type: LoadBalancer
+  ports:
+    - protocol: TCP
+      port: 8081
+      targetPort: 8081
+      # external port it will listen. Note that nodePort can range between 30000 - 32767
+      nodePort: 30000
